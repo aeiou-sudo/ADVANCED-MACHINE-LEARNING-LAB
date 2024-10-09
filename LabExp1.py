@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_squared_error
+# from sklearn.metrics import mean_squared_error
 
 # Step 1: Load the CSV data
 def load_data(file_path):
@@ -25,12 +25,12 @@ def simple_linear_regression(X_train, y_train, X_test, y_test):
     lr.fit(X_train_simple, y_train)
     y_pred = lr.predict(X_test_simple)
     
-    mse = mean_squared_error(y_test, y_pred)
+    # mse = mean_squared_error(y_test, y_pred)
     
     print("\nSimple Linear Regression:")
     print("Coefficients:", lr.coef_)
     print("Intercept:", lr.intercept_)
-    print("Mean Squared Error:", mse)
+    # print("Mean Squared Error:", mse)
 
 # Step 4: Multiple Linear Regression (Multiple features)
 def multiple_linear_regression(X_train, y_train, X_test, y_test):
@@ -39,21 +39,21 @@ def multiple_linear_regression(X_train, y_train, X_test, y_test):
     lr.fit(X_train, y_train)
     y_pred = lr.predict(X_test)
     
-    mse = mean_squared_error(y_test, y_pred)
+    # mse = mean_squared_error(y_test, y_pred)
     
     print("\nMultiple Linear Regression:")
     print("Coefficients:", lr.coef_)
     print("Intercept:", lr.intercept_)
-    print("Mean Squared Error:", mse)
+    # print("Mean Squared Error:", mse)
 
 # Step 5: Main function to execute the regression process
 def main():
     # Load the dataset from CSV
-    file_path = 'data.csv'  # Replace with the actual file path
+    file_path = './Linear_Reg_DATASET.csv'  # Replace with the actual file path
     data = load_data(file_path)
     
     # Preprocess the data (split into X and y)
-    target_column = 'target'  # Replace with the actual target column name
+    target_column = 'Salary'  # Replace with the actual target column name
     X, y = preprocess_data(data, target_column)
     
     # Split data into training and testing sets
