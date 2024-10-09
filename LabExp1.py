@@ -72,12 +72,14 @@ def multiple_linear_regression(X_train, y_train, X_test, y_test, y):
 # Step 5: Main function to execute the regression process
 def main():
     # Load the dataset from CSV
-    file_path = './Linear_Reg_DATASET.csv'  # Replace with the actual file path
+    file_path = '/Users/pauljose/Downloads/multiLinearRawData.csv'  # Replace with the actual file path
     data = load_data(file_path)
     
     # Preprocess the data (split into X and y)
-    target_column = 'Salary'  # Replace with the actual target column name
+    target_column = 'target'  # Replace with the actual target column name
     X, y = preprocess_data(data, target_column)
+    print("X is :\n", X)
+    print("Y is: \n", y)
     
     # Split data into training and testing sets
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
