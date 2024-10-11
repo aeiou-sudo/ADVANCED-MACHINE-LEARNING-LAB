@@ -35,11 +35,13 @@ X_test_simple = X_test[['Hours Studied']]
 # Creating and training the model for simple linear regression using 'Hours Studied' as the only feature
 model_simple = LinearRegression()  # Initializing the linear regression model
 model_simple.fit(X_train_simple, y_train)  # Training the model on the training data
-
+print("SLR co-efficient -> ", model_simple.coef_)
+print("SLR intercept -> ", model_simple.intercept_)
 # Creating and training the model for multiple linear regression using all features
 model_multi = LinearRegression()  # Initializing the multiple linear regression model
 model_multi.fit(X_train, y_train)  # Training the model on the full feature set
-
+print("MLR co-efficient -> ", model_multi.coef_)
+print("MLR intercept -> ", model_multi.intercept_)
 
     # # Prediction for Simple Linear Regression (with feature name for 'Hours Studied')
     # # Wrapping the input in a DataFrame with the same feature name as the training data
