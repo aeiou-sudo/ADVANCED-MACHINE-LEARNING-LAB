@@ -21,7 +21,7 @@ To set up the environment and run the code, follow these steps:
 
 1. Clone the repository:
     ```bash
-    git clone <repository-url>
+    git clone https://github.com/aeiou-sudo/ADVANCED-MACHINE-LEARNING-LAB.git
     ```
 2. Navigate to the project directory:
     ```bash
@@ -34,7 +34,7 @@ To set up the environment and run the code, follow these steps:
     ```
 4. Install the required dependencies:
     ```bash
-    pip install -r requirements.txt
+    I have excluded myenv folder. Therefore, manually install the dependencies
     ```
 
 ## Usage
