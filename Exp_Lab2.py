@@ -21,8 +21,10 @@ le = LabelEncoder()
 
 # Convert categorical features into numerical values
 for column in ['Attends Workshop', 'Has Arts Background', 'Parent Encouragement', 'School Support', 'Has Free Time', 'Participates']:
-    data[column] = le.fit_transform(data[column])
-
+    if column in data.columns:
+        data[column] = le.fit_transform(data[column])
+    else:
+        print(f"Column '{column}' not found in dataset")
 
 # Print the dataset for inspection
 print(data.head())
