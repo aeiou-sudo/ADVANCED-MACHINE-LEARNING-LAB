@@ -1,79 +1,73 @@
-# Importing necessary libraries
-import pandas as pd  # For data manipulation
-from sklearn.model_selection import train_test_split  # For splitting the dataset into training and testing sets
-from sklearn.naive_bayes import GaussianNB  # For performing linear regression
-import matplotlib.pyplot as plt #For visual represenation using graphs
-import seaborn as sns
-import numpy as np # For data manipulation
-from sklearn.metrics import accuracy_score, confusion_matrix, roc_curve, auc
+from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import GaussianNB
+from sklearn.metrics import accuracy_score
 from sklearn.preprocessing import LabelEncoder
+import pandas as pd
 
-# Load the dataset from a CSV file
-# Replace 'sample_data.csv' with your actual dataset file
-data = pd.read_csv('./Dataset/sample_data.csv')
-
-# Print the dataset for inspection
-print(data.head())
-
-
-# Initialize the LabelEncoder
-le = LabelEncoder()
-
-# Convert categorical features into numerical values
-for column in ['Attends Workshop', 'Has Arts Background', 'Parent Encouragement', 'School Support', 'Has Free Time', 'Participates']:
-    if column in data.columns:
+def encode_features(data, columns):
+    le = LabelEncoder()
+    for column in columns:
         data[column] = le.fit_transform(data[column])
-    else:
-        print(f"Column '{column}' not found in dataset")
+    return data
 
-# Print the dataset for inspection
-print(data.head())
+def preprocess_data(file_path):
+    data = pd.read_csv(file_path)
+    data.columns = data.columns.str.strip()
+    data = data.drop(columns=['Margin', 'Match Date', 'T-20 Int Match'])
+    data = encode_features(data, ['Team1', 'Team2', 'Ground', 'Winner'])
+    features = [col for col in data.columns if col != 'Winner']
+    X = data[features]
+    y = data['Winner']
+    return X, y, data
 
-# Assume the last column is the target (label) and others are features
-X = data.iloc[:, :-1]  # All columns except the last
-y = data.iloc[:, -1]   # The last column is the target
+def split_data(X, y):
+    return train_test_split(X, y, test_size=0.2, random_state=42)
 
-# Split the dataset into training and testing sets (80% training, 20% testing)
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+def train_model(X_train, y_train):
+    model = GaussianNB()
+    model.fit(X_train, y_train)
+    return model
 
-# Initialize the Naive Bayes classifier
-model = GaussianNB()
+def evaluate_model(model, X_test, y_test):
+    y_pred = model.predict(X_test)
+    return accuracy_score(y_test, y_pred)
 
-# Train the classifier on the training set
-model.fit(X_train, y_train)
+def classify_user_input(model, feature_columns, data):
+    user_input = []
+    le = LabelEncoder()
+    label_encodings = {}
 
-# Predict the target values for the test set
-y_pred = model.predict(X_test)
+    # Fit the label encoder based on the original data's encodings and store valid options
+    for column in ['Team1', 'Team2', 'Ground']:
+        le.fit(data[column])
+        label_encodings[column] = dict(zip(le.classes_, le.transform(le.classes_)))
+        print(f"Valid options for {column}: {list(label_encodings[column].keys())}")
 
-# Compute the accuracy of the classifier
-accuracy = accuracy_score(y_test, y_pred)
-print(f"Accuracy of the Naive Bayes Classifier: {accuracy * 100:.2f}%")
+    print("Enter the values for the following features:")
+    for feature in feature_columns:
+        value = input(f"{feature}: ")
+        
+        # Encode categorical inputs based on training data's encoding
+        if feature in label_encodings:
+            if value in label_encodings[feature]:
+                encoded_value = label_encodings[feature][value]
+                user_input.append(encoded_value)
+            else:
+                print(f"Invalid input for {feature}. Please enter a known value from the list above.")
+                return
+        else:
+            user_input.append(float(value) if value.replace('.', '', 1).isdigit() else value)
 
-# Create the confusion matrix
-cm = confusion_matrix(y_test, y_pred)
-
-# Plot the confusion matrix
-plt.figure(figsize=(6, 4))
-sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=['No', 'Yes'], yticklabels=['No', 'Yes'])
-plt.xlabel('Predicted')
-plt.ylabel('Actual')
-plt.title('Confusion Matrix')
-plt.show()
+    user_data = pd.DataFrame([user_input], columns=feature_columns)
+    prediction = model.predict(user_data)
+    print("Predicted Winner:", prediction[0])
 
 
-# Get predicted probabilities for the positive class (1)
-y_prob = model.predict_proba(X_test)[:, 1]
+X, y, data = preprocess_data('./Dataset/naive_bayesian.csv')
+X_train, X_test, y_train, y_test = split_data(X, y)
+model = train_model(X_train, y_train)
+accuracy = evaluate_model(model, X_test, y_test)
+print(f"Model Accuracy: {accuracy * 100:.2f}%")
 
-# Compute the ROC curve and AUC
-fpr, tpr, thresholds = roc_curve(y_test, y_prob)
-roc_auc = auc(fpr, tpr)
-
-# Plot ROC curve
-plt.figure()
-plt.plot(fpr, tpr, color='darkorange', lw=2, label=f'ROC curve (AUC = {roc_auc:.2f})')
-plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
-plt.xlabel('False Positive Rate')
-plt.ylabel('True Positive Rate')
-plt.title('ROC Curve')
-plt.legend(loc="lower right")
-plt.show()
+# Call classify_user_input to classify a new user input based on the trained model
+classify_user_input(model, X.columns, data)
